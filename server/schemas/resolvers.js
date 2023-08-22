@@ -32,16 +32,6 @@ const resolvers = {
 
       return { token, user };
     },
-    saveBook: async (parent, { thoughtText, thoughtAuthor }) => {
-      const thought = await Thought.create({ thoughtText, thoughtAuthor });
-
-      await User.findOneAndUpdate(
-        { username: thoughtAuthor },
-        { $addToSet: { thoughts: thought._id } }
-      );
-
-      return thought;
-    },
     async saveBook(parent, args, context) {
         console.log(context.user);
         try {
@@ -56,9 +46,9 @@ const resolvers = {
           throw AuthenticationError;
         }
       },
-      async deleteBook(parent, args, context) {
+      async removeBook(parent, args, context) {
         const updatedUser = await User.findOneAndUpdate(
-          { _id: context._id },
+          { _id: context.user._id },
           { $pull: { savedBooks: { bookId: args.bookId } } },
           { new: true }
         );
